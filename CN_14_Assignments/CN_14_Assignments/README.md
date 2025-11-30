@@ -54,7 +54,7 @@ gcc client.c -o client
 
 **Features:**
 - Shared memory for inventory management across multiple child processes
-- Semaphore-based locking for thread-safe operations
+- Semaphore-based locking for process-safe operations
 - Multi-client support using `fork()`
 - Tracks unique customers and purchase transactions
 
@@ -366,7 +366,7 @@ gcc packet_analyzer.c -o analyzer -lpcap
 **Topology Structure:**
 - Spine Switches = k
 - Leaf Switches = k × 2
-- Hosts = k × 2 (one per leaf)
+- Hosts = k × 2 (one host per leaf switch)
 
 **Files:**
 - `leaf_spine_topology.py` - Python topology definition
@@ -374,10 +374,10 @@ gcc packet_analyzer.c -o analyzer -lpcap
 
 **Execution:**
 ```bash
-# Default (k=2): 2 Spines, 4 Leaves
+# Default (k=2): 2 Spine Switches, 4 Leaf Switches
 sudo mn --custom leaf_spine_topology.py --topo ls --controller=none
 
-# Scaled (k=4): 4 Spines, 8 Leaves
+# Scaled (k=4): 4 Spine Switches, 8 Leaf Switches
 sudo mn --custom leaf_spine_topology.py --topo ls,k=4 --controller=none
 
 # Verify
