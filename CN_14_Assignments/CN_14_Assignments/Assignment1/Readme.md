@@ -46,10 +46,8 @@ xterm h1 h2
 Create the server program:
 
 ```bash
-nano tcp_server.c
+vim tcp_server.c
 ```
-
-*(Paste the TCP server code and save)*
 
 Compile the server:
 
@@ -70,10 +68,8 @@ Run the server:
 Create the client program:
 
 ```bash
-nano tcp_client.c
+vim tcp_client.c
 ```
-
-*(Paste the TCP client code and save)*
 
 Compile the client:
 
