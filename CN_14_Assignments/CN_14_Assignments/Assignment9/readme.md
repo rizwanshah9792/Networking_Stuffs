@@ -1,60 +1,148 @@
-sudo mn --topo single,2
-*(This creates one switch and two hosts: h1 and h2)*
+# Computer Networks Lab – Assignment 9
 
-#### Step 2: Open Terminals for Hosts
-Inside the Mininet console `mininet>`, type:
+## TCP File Upload and Download Using Mininet
+
+This README consolidates and cleans the provided README files for **Assignment 9**. Duplicate explanations and repeated steps have been removed, and the execution flow is simplified and consistent.
+
+---
+
+## Objective
+
+To implement a TCP-based client–server application that supports **file download and file upload** between two Mininet hosts and to measure the **transfer time** for both operations.
+
+---
+
+## Network Setup
+
+* Topology: **Single switch with two hosts**
+* h1 → Server (IP: `10.0.0.1`)
+* h2 → Client (IP: `10.0.0.2`)
+
+Start Mininet:
+
+```bash
+sudo mn --topo single,2
+```
+
+Open terminals for both hosts:
+
 ```bash
 xterm h1 h2
-*(Two black terminal windows will pop up. h1 will be the Server, h2 will be the Client)*
+```
 
-#### Step 3: Prepare the Server (In h1 Terminal)
-1.  Create a folder for the server:
-    ```bash
-    mkdir server_folder
-    cd server_folder
-    2.  Create the C file (copy-paste the Server code above):
-    ```bash
-    nano server.c
-    # (Paste code, Save: Ctrl+O, Enter, Exit: Ctrl+X)
-    3.  Compile it:
-    ```bash
-    gcc server.c -o server
-    4.  **Crucial:** Create the dummy file that needs to be downloaded by the client:
-    ```bash
-    # Creates a dummy file with some text
-    echo "This is a file residing on the server." > server_data.txt
-    5.  Run the server:
-    ```bash
-    ./server
-    
-#### Step 4: Prepare the Client (In h2 Terminal)
-1.  Create a folder for the client:
-    ```bash
-    mkdir client_folder
-    cd client_folder
-    2.  Create the C file (copy-paste the Client code above):
-    ```bash
-    nano client.c
-    # (Paste code, Save and Exit)
-    3.  Compile it:
-    ```bash
-    gcc client.c -o client
-    4.  **Crucial:** Create the dummy file that the client will upload to the server:
-    ```bash
-    echo "This is the client's secret file." > client_data.txt
-    5.  Run the client (h1's IP is usually 10.0.0.1 in Mininet):
-    ```bash
-    ./client 10.0.0.1
-    
-### 4. Expected Output
+---
 
-**In the Client (h2) window:**
-You should see "Connected," then "Download Complete," then "Upload Complete," along with the time taken (e.g., `0.000240 seconds`).
+## Execution Steps
 
-**In the Server (h1) window:**
-You should see "Client connected," then "File Sent," then "File Received."
+### Step 1: Server Setup (h1)
 
-**Verification:**
-If you list the files in the folders (`ls -l`), you will see:
-* `server_folder`: contains `uploaded_by_client.txt` (New!)
-* `client_folder`: contains `downloaded_from_server.txt` (New!)
+```bash
+mkdir server_folder
+cd server_folder
+```
+
+Create server program:
+
+```bash
+nano server.c
+```
+
+*(Paste the server code and save)*
+
+Compile:
+
+```bash
+gcc server.c -o server
+```
+
+Create the file to be downloaded by client:
+
+```bash
+echo "This is a file residing on the server." > server_data.txt
+```
+
+Run the server:
+
+```bash
+./server
+```
+
+---
+
+### Step 2: Client Setup (h2)
+
+```bash
+mkdir client_folder
+cd client_folder
+```
+
+Create client program:
+
+```bash
+nano client.c
+```
+
+*(Paste the client code and save)*
+
+Compile:
+
+```bash
+gcc client.c -o client
+```
+
+Create the file to be uploaded to server:
+
+```bash
+echo "This is the client's secret file." > client_data.txt
+```
+
+Run the client (connect to server):
+
+```bash
+./client 10.0.0.1
+```
+
+---
+
+## Verification
+
+### Client Side (h2)
+
+* Connection to server is established
+* Server file is downloaded successfully
+* Client file is uploaded successfully
+* Download and upload times are displayed
+
+### Server Side (h1)
+
+* Client connection is accepted
+* File is sent to client
+* File is received from client
+
+Verify files:
+
+```bash
+ls -l
+```
+
+* `server_folder` contains `uploaded_by_client.txt`
+* `client_folder` contains `downloaded_from_server.txt`
+
+---
+
+## Output
+
+```
+<Leave blank – add screenshots / terminal output here>
+```
+
+---
+
+## Learning Outcomes
+
+* Understanding TCP client–server communication
+* File transfer using sockets
+* Measuring transmission time
+* Practical use of Mininet for network experiments
+
+---
