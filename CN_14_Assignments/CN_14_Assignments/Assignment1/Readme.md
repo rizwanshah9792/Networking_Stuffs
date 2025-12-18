@@ -93,13 +93,6 @@ Run the client (connect to server):
 
 ---
 
-## Output
-
-```
-<Leave blank – add terminal output screenshot here>
-```
-
----
 
 ## Learning Outcomes
 
