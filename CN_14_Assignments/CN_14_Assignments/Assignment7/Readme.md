@@ -1,78 +1,159 @@
-How to Execute in Mininet
+# Assignment 7: UDP Client-Server with Packet Loss Testing
 
-This guide explains how to compile, run, and verify the packet loss requirement using Mininet and Wireshark.
+This guide demonstrates how to compile, run, and verify packet loss handling using Mininet and Wireshark for testing UDP communication reliability.
 
-Step 1: Create the Mininet Topology
+## Prerequisites
 
-We need a simple network with 2 hosts (h1 and h2) and a switch. To test reliability, we will artificially introduce packet loss (10% loss) on the link.
+- Mininet installed
+- GCC compiler
+- Wireshark
+- Root/sudo access
 
-Open your terminal and run:
+## Network Setup
 
+### Step 1: Create the Mininet Topology
+
+Create a simple network with 2 hosts (`h1` and `h2`) and a switch.  We'll introduce 20% packet loss to test reliability: 
+
+```bash
 sudo mn --topo single,2 --link tc,loss=20
+```
 
+> **Note:** `loss=20` introduces a 20% packet drop rate, ideal for testing timeout mechanisms.
 
-Note: loss=20 means there is a 20% chance a packet will be dropped, perfect for testing our timeout code.
+### Step 2: Open Host Terminals
 
-Step 2: Open Host Terminals
+Inside the Mininet prompt (`mininet>`), open terminals for both hosts: 
 
-Inside the Mininet prompt mininet>, open terminals for both hosts:
-
+```bash
 xterm h1 h2
+```
 
+## Compilation
 
-Step 3: Compile the Code
+### On Host 1 (Server)
 
-In the h1 terminal (Server), type:
-
+```bash
 gcc server.c -o server -lm
+```
 
+### On Host 2 (Client)
 
-In the h2 terminal (Client), type:
-
+```bash
 gcc client.c -o client
+```
 
+> **Note:** The `-lm` flag links the math library, which is required for this implementation.
 
-(Note: -lm is required to link the math library)
+## Monitoring with Wireshark
 
-Step 4: Start Wireshark
+### Step 4: Start Packet Capture
 
-To see the packets, we need Wireshark. In the Mininet prompt (or a new system terminal), run:
+1. Launch Wireshark from the Mininet prompt or a new terminal: 
 
+```bash
 sudo wireshark &
+```
 
+2. Select the interface `h1-eth0` (Host 1's network interface) or `s1-eth1`
+3. Double-click the interface to start capturing
+4. Apply the filter: `udp` in the filter bar and press Enter
 
-When Wireshark opens, look for the interface h1-eth0 (this is Host 1's network card) or s1-eth1.
+## Running the Programs
 
-Double-click it to start capturing.
+### Start the Server (Host 1)
 
-In the filter bar at the top, type udp and press Enter. This filters out the noise.
+In the `h1` terminal:
 
-Step 5: Run the Programs
-
-In terminal h1 (Server):
-
+```bash
 ./server
+```
 
+The server will now wait for incoming connections. 
 
-(It will wait for connections...)
+### Start the Client (Host 2)
 
-In terminal h2 (Client):
-First, find the IP of h1. In h1's terminal, type ifconfig (usually 10.0.0.1).
-Then in h2:
+1. First, obtain Host 1's IP address.  In the `h1` terminal:
 
+```bash
+ifconfig
+```
+
+(Typically `10.0.0.1`)
+
+2. In the `h2` terminal, run:
+
+```bash
 ./client 10.0.0.1
+```
 
+## Testing & Verification
 
-Step 6: Testing & Detection
+### Normal Operation
 
-Normal Case: Enter add, 10, 20.
+**Input:**
+```
+add 10 20
+```
 
-Client: Shows result 30.00.
+**Expected Output:**
+- **Client:** `Result: 30.00`
+- **Wireshark:** Two UDP packets visible: 
+  - Request:  `10.0.0.2 → 10.0.0.1`
+  - Reply: `10.0.0.1 → 10.0.0.2`
 
-Wireshark: You will see two blue UDP packets. One from 10.0.0.2 -> 10.0.0.1 (Request) and one back (Reply).
+### Packet Loss Scenario
 
-Packet Loss Case: Keep entering calculations. Because we set loss=20 in Step 1, eventually a request will fail.
+Continue entering calculations. Due to the 20% packet loss rate configured in Step 1, some requests will fail. 
 
-Client: The program will freeze for 3 seconds (our timeout) and then print: [!] Error: Request timed out. Packet lost or server down.
+**Expected Behavior:**
+- **Client:** Waits for 3 seconds (timeout period), then displays: 
+  ```
+  [!] Error: Request timed out.  Packet lost or server down.
+  ```
+- **Wireshark:** Request packet is sent (`10.0.0.2 → 10.0.0.1`), but no reply packet is received
 
-Wireshark: You will see the Request packet go out, but no Reply packet follows immediately.
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| `command not found:  mn` | Install Mininet: `sudo apt-get install mininet` |
+| Compilation error with `-lm` | Ensure build-essential is installed: `sudo apt-get install build-essential` |
+| Wireshark shows no packets | Verify you're capturing on the correct interface (`h1-eth0` or `s1-eth1`) |
+| Client cannot connect | Verify server IP with `ifconfig` on `h1` |
+
+## Cleanup
+
+To exit Mininet:
+
+```bash
+mininet> exit
+```
+
+To clean up Mininet:
+
+```bash
+sudo mn -c
+```
+
+## Network Topology
+
+```
+    h1 (10.0.0.1)
+      |
+     s1 (switch with 20% loss)
+      |
+    h2 (10.0.0.2)
+```
+
+## Protocol Details
+
+- **Transport Layer:** UDP
+- **Port:** (Specified in code)
+- **Timeout:** 3 seconds
+- **Packet Loss Rate:** 20% (configurable)
+
+---
+
+**Author:** rizwanshah9792  
+**Repository:** [Networking_Stuffs](https://github.com/rizwanshah9792/Networking_Stuffs)
