@@ -1,43 +1,127 @@
-For this assignment, we need a "Star Topology." We will have one central Switch (s1), and three hosts connected to it:
+# Assignment 8: Multi-Client Chat Server
 
-h1: Will act as the Server.
+## Overview
+This assignment implements a multi-threaded chat server and client application using a star topology network.  The server handles multiple client connections simultaneously and logs all conversations. 
 
-h2: Will be Alice (Client 1).
+## Network Topology
 
-h3: Will be Bob (Client 2).
+The implementation uses a **Star Topology** with the following components: 
 
-$sudo mn --topo single,3 --mac
+- **Switch (s1)**: Central switch connecting all hosts
+- **Host 1 (h1)**: Chat Server (IP: 10.0.0.1)
+- **Host 2 (h2)**: Client - Alice (IP: 10.0.0.2)
+- **Host 3 (h3)**: Client - Bob (IP: 10.0.0.3)
 
---topo single,3: Creates 1 switch connected to 3 hosts.
+## Setup Instructions
 
---mac: Sets simple MAC addresses (h1 gets 00:00:00:00:00:01, etc.) and usually sets IPs sequentially (h1=10.0.0.1, h2=10.0.0.2).
+### 1. Create Mininet Topology
 
+Launch Mininet with a single switch and three hosts:
 
+```bash
+sudo mn --topo single,3 --mac
+```
+
+**Parameters:**
+- `--topo single,3`: Creates one switch connected to three hosts
+- `--mac`: Assigns simple MAC addresses (h1: 00:00:00:00:00:01, h2: 00:00:00:00:00:02, h3: 00:00:00:00:00:03)
+- Automatically assigns sequential IP addresses (10.0.0.1, 10.0.0.2, 10.0.0.3)
+
+### 2. Open Terminal Windows
+
+Open separate terminal windows for each host:
+
+```bash
 xterm h1 h2 h3
+```
 
+### 3. Compile the Code
 
-Compile the Code
-You must compile the code inside these new windows. Crucial Note: Because we used the <pthread.h> library, you must add the -pthread flag, or the code will fail to compile.
+Compile the server and client programs on their respective hosts.  **Important**: Include the `-pthread` flag since the code uses the POSIX threads library. 
 
-In the h1 (Server) terminal:
+**On h1 (Server terminal):**
+```bash
+gcc server.c -o server -pthread
+```
 
-$gcc server.c -o server -pthread
+**On h2 (Client terminal):**
+```bash
+gcc client.c -o client -pthread
+```
 
-In the h2 (Client) terminal:
+**On h3 (Client terminal):**
+```bash
+gcc client.c -o client -pthread
+```
 
-$gcc client.c -o client -pthread
+## Running the Application
 
-In the h3 (Client) terminal: You can re-type the command, or just use the same executable if they share a folder. To be safe, just compile it here too:
+### 4. Start the Server
 
-$gcc client.c -o client -pthread
+**On h1:**
+```bash
+./server
+```
 
-h1: ./server
-h2: ./client 10.0.0.1 // Enter name: Alice
-h3: ./client 10.0.0.1 // Enter name: Bob
+The server will start listening for incoming client connections.
 
-h2: "Hello Bob!
-h3: "Hi Alice!"
+### 5. Connect Clients
 
+**On h2 (Alice):**
+```bash
+./client 10.0.0.1
+```
+When prompted, enter the name:  `Alice`
 
-Check the generated text file:
-$cat log.txt
+**On h3 (Bob):**
+```bash
+./client 10.0.0.1
+```
+When prompted, enter the name: `Bob`
+
+### 6. Send Messages
+
+Once both clients are connected, they can send messages to each other. 
+
+**Example conversation:**
+
+**From h2 (Alice):**
+```
+Hello Bob!
+```
+
+**From h3 (Bob):**
+```
+Hi Alice!
+```
+
+All messages will be broadcast to all connected clients and logged on the server.
+
+## Verify Chat Logs
+
+The server automatically logs all messages to a text file. To view the conversation history:
+
+```bash
+cat log.txt
+```
+
+## Features
+
+- Multi-threaded server supporting concurrent client connections
+- Real-time message broadcasting to all connected clients
+- Conversation logging to file
+- Client identification by username
+- Thread-safe message handling
+
+## Requirements
+
+- Mininet network emulator
+- GCC compiler with pthread support
+- Linux/Unix environment
+
+## Troubleshooting
+
+- If compilation fails, ensure you include the `-pthread` flag
+- If clients cannot connect, verify the server is running on h1
+- Check that the IP address (10.0.0.1) matches the server host
+- Ensure all terminals are opened within the Mininet environment
