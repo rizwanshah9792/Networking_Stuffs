@@ -2,7 +2,7 @@
 
 This repository contains implementations for **Computer Networks Laboratory assignments**.
 Each section below lists **only the problem statement (question)** as given in the lab manual.
-**Outputs, screenshots.
+**Outputs, screenshots.**
 
 ---
 
